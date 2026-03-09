@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿嬤的 AI 零元英文機</title>
+    <style>
+        body { font-family: 'PingFang TC', sans-serif; background: #f0f4f8; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        canvas { border-radius: 20px; background: #fafafa; border: 2px solid #eee; margin-top: 10px; cursor: pointer; }
+        .controls { display: flex; justify-content: space-around; margin-top: 20px; flex-wrap: wrap; }
+        button { background: #4A90E2; color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; font-size: 16px; margin: 5px; transition: 0.3s; }
+        button:hover { background: #357ABD; }
+        input { padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 80%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>👵 阿嬤的 AI 英文點點樂</h2>
+    
+    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">
+        📊 今日進度：<span id="scoreText">0</span> 題 | 強項：<span id="strengthText">尚未分析</span>
+    </div>
+
+    <canvas id="mainCanvas" width="400" height="300"></canvas>
+
+    <div class="controls">
+        <button onclick="startVocab()">1. 記單字</button>
+        <button onclick="startQuiz()">2. 考多益</button>
+        <button onclick="startAI()">3. 跟 AI 聊天</button>
+    </div>
+    
+    <div id="aiInputArea" style="display:none;">
+        <input type="text" id="userSpeech" placeholder="跟 AI 說句話吧...">
+        <button onclick="sendToAI()">發送</button>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    let mode = 'HOME';
+    let count = parseInt(localStorage.getItem('studyCount') || '0');
+
+    // 更新介面文字
+    function updateStats() {
+        document.getElementById('scoreText').innerText = count;
+        localStorage.setItem('studyCount', count);
+    }
+
+    // 畫畫功能
+    function draw(text, subtext = "", color = "#333") {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = "center";
+        
+        // 畫主題文字
+        ctx.fillStyle = color;
+        ctx.font = "bold 28px Arial";
+        ctx.fillText(text, 200, 140);
+        
+        // 畫說明文字
+        ctx.fillStyle = "#666";
+        ctx.font = "18px Arial";
+        ctx.fillText(subtext, 200, 190);
+    }
+
+    // 1. 單字練習
+    function startVocab() {
+        mode = 'VOCAB';
+        count++;
+        updateStats();
+        draw("Leverage", "利用、槓桿 (商務高頻詞)", "#4A90E2");
+    }
+
+    // 2. 多益測驗
+    function startQuiz() {
+        mode = 'QUIZ';
+        draw("The _____ for the meeting is set.", "A. Agenda  B. Apple", "#E67E22");
+    }
+
+    // 3. AI 聊天介面
+    function startAI() {
+        mode = 'AI';
+        document.getElementById('aiInputArea').style.display = 'block';
+        draw("AI 老師在線中...", "請在下方輸入想說的話", "#27AE60");
+    }
+
+    async function sendToAI() {
+        const msg = document.getElementById('userSpeech').value;
+        if (!msg) return;
+        
+        draw("AI 正在想...", "阿嬤請等一下下喔...", "#999");
+        
+        // 這裡就是阿嬤放 AI 鑰匙的地方 (示範邏輯)
+        // 之後我們會串接真正的 Google Gemini API
+        setTimeout(() => {
+            draw("AI 說：", "阿嬤妳說得真棒！'" + msg + "' 是很道地的用法！", "#27AE60");
+            document.getElementById('userSpeech').value = "";
+        }, 1500);
+    }
+
+    // 初始畫面
+    draw("歡迎阿嬤！", "點下方按鈕開始學習", "#333");
+    updateStats();
+</script>
+
+</body>
+</html>
